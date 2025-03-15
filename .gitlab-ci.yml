@@ -1,0 +1,2 @@
+include: 
+    - remote: 'https://ms-gitlab-service-001.hanpda.com/api/v4/projects/215/repository/files/.gitlab-ci-odin-pub.yml/raw?ref=master&private_token=e4P1bsCq7fenW8iFAgdj&.yaml'

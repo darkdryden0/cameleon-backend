@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+use App\Kernel;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+
+date_default_timezone_set('Asia/Seoul');
+
+// ROOT 디랙토리
+if (!defined('_PATH_ROOT_')) {
+    define('_PATH_ROOT_', dirname(__DIR__, 1));
+}
+
+if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
+    throw new LogicException('Symfony Runtime is missing. Try running "composer require symfony/runtime".');
+}
+
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+require_once dirname(__DIR__).'/functions.php';
+
+return function (array $context) {
+    $kernel = new Kernel($context['APP_ENV'], false);
+
+    return new Application($kernel);
+};

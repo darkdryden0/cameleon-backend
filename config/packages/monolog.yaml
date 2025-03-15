@@ -1,0 +1,7 @@
+monolog:
+    handlers:
+        app_log:
+            type: service
+            id: App\Monolog\AppLogHandler
+            level: debug
+            channels: ['app']

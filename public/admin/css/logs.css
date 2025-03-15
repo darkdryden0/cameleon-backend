@@ -1,0 +1,83 @@
+/* 기본 테이블 스타일 향상 */
+.table-responsive {
+
+}
+
+.table {
+    width: 100%;
+    background-color: #fff;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+    text-align: left;
+}
+
+.table thead th {
+    background-color: #343a40;
+    color: #fff;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* 텍스트 영역 스타일링 */
+.table textarea {
+    width: 100%;
+    height: 100px;
+    resize: vertical;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* 호버 효과 추가 */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+}
+
+/* 기본 폼 스타일링 */
+.search {
+    background-color: #f9f9f9;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* 각 입력 필드를 블록 레벨로 정렬 */
+.search p {
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* 입력 필드 스타일링 */
+.search input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* 폼 레이블과 입력 필드를 가로로 정렬 */
+.search p {
+    display: flex;
+    align-items: center;
+}
+
+/* 레이블과 입력 필드 사이의 간격 조정 */
+.search p input {
+    margin-left: 10px;
+}
+
+/* 폼 내부 간격 조정 */
+.search form {
+    display: flex;
+    flex-direction: column;
+}
