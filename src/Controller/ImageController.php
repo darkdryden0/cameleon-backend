@@ -28,11 +28,27 @@ class ImageController extends BaseController
         return $this->response('success', $result);
     }
 
+    #[Route('/api/insert/created', methods: 'POST')]
+    public function insertCreateImages(): Response
+    {
+        $param = $this->getContentParams();
+        $this->imageService->insertCreateImages($param);
+        return $this->response('success', []);
+    }
+
     #[Route('/api/delete/created', methods: 'PUT')]
     public function deleteCreateImages(): Response
     {
         $param = $this->getContentParams();
         $this->imageService->deleteCreateImages($param);
+        return $this->response('success', []);
+    }
+
+    #[Route('/api/insert/upload', methods: 'POST')]
+    public function insertUploadImages(): Response
+    {
+        $param = $this->getContentParams();
+        $this->imageService->insertUploadImages($param);
         return $this->response('success', []);
     }
 
@@ -44,27 +60,19 @@ class ImageController extends BaseController
         return $this->response('success', []);
     }
 
+    #[Route('/api/insert/storage', methods: 'POST')]
+    public function insertStorageImg(): Response
+    {
+        $param = $this->getContentParams();
+        $this->imageService->insertStorageImg($param);
+        return $this->response('success', []);
+    }
+
     #[Route('/api/delete/storage', methods: 'PUT')]
     public function deleteStorageImages(): Response
     {
         $param = $this->getContentParams();
         $this->imageService->deleteStorageImages($param);
-        return $this->response('success', []);
-    }
-
-    #[Route('/api/created/storage', methods: 'POST')]
-    public function createMoveToStorage(): Response
-    {
-        $param = $this->getContentParams();
-        $this->imageService->createMoveToStorage($param);
-        return $this->response('success', []);
-    }
-
-    #[Route('/api/upload/storage', methods: 'POST')]
-    public function uploadMoveToStorage(): Response
-    {
-        $param = $this->getContentParams();
-        $this->imageService->uploadMoveToStorage($param);
         return $this->response('success', []);
     }
 }
