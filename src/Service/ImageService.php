@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Medoo\Repository\CreatedImagesRepository;
+use App\Medoo\Repository\ReferenceImagesRepository;
 use App\Medoo\Repository\StorageImagesRepository;
 use App\Medoo\Repository\UploadImagesRepository;
 use App\Middleware\Context;
@@ -15,18 +16,21 @@ class ImageService
     private CreatedImagesRepository $createdImagesRepository;
     private UploadImagesRepository $uploadImagesRepository;
     private StorageImagesRepository $storageImagesRepository;
+    private ReferenceImagesRepository $referenceImagesRepository;
 
     public function  __construct(
-        LoggerInterface         $appLogger,
-        CreatedImagesRepository $createdImagesRepository,
-        UploadImagesRepository  $uploadImagesRepository,
-        StorageImagesRepository $storageImagesRepository,
+        LoggerInterface           $appLogger,
+        CreatedImagesRepository   $createdImagesRepository,
+        UploadImagesRepository    $uploadImagesRepository,
+        StorageImagesRepository   $storageImagesRepository,
+        ReferenceImagesRepository $referenceImagesRepository,
     )
     {
         $this->appLogger = $appLogger;
         $this->createdImagesRepository = $createdImagesRepository;
         $this->uploadImagesRepository = $uploadImagesRepository;
         $this->storageImagesRepository = $storageImagesRepository;
+        $this->referenceImagesRepository = $referenceImagesRepository;
     }
 
     public function getImageList(): array
@@ -131,6 +135,13 @@ class ImageService
         if (ArrayUtil::isValidArray($insertData)) {
             $this->storageImagesRepository->insert($insertData);
         }
+    }
 
+    public function getReferenceImages($param): array
+    {
+        $where = [
+            'mall_id' => Context::getMallId(),
+        ];
+        return $this->referenceImagesRepository->findBy($where);
     }
 }

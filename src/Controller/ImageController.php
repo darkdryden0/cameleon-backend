@@ -75,4 +75,12 @@ class ImageController extends BaseController
         $this->imageService->deleteStorageImages($param);
         return $this->response('success', []);
     }
+
+    #[Route('/api/reference/images', methods: 'GET')]
+    public function getReferenceImages(): Response
+    {
+        $param = $this->getQueryParams();
+        $result = $this->imageService->getReferenceImages($param);
+        return $this->response('success', $result);
+    }
 }
