@@ -141,7 +141,32 @@ class ImageService
     {
         $where = [
             'mall_id' => Context::getMallId(),
+            'is_deleted' => 'F'
         ];
         return $this->referenceImagesRepository->findBy($where);
+    }
+
+    public function insertReferenceImage($param): void
+    {
+        $url = ArrayUtil::getVal('url', $param);
+        if ($url) {
+            $this->referenceImagesRepository->insert([
+                'mall_id' => Context::getMallId(),
+                'url' => $url,
+                'content' => ArrayUtil::getVal('content', $param),
+                'insert_date' => date('Y-m-d H:i:s'),
+                'is_deleted' => 'F'
+            ]);
+        }
+    }
+
+    public function deleteReferenceImage($param): void
+    {
+        // 업로드 이미지를 삭제한다
+        $id = ArrayUtil::getVal('id', $param);
+        if ($id) {
+            // 업로드 이미지를 삭제한다
+            $this->referenceImagesRepository->update(['is_deleted' => 'T', 'deleted_date' => date('Y-m-d H:i:s')],['mall_id' => Context::getMallId(), 'id' => $id]);
+        }
     }
 }

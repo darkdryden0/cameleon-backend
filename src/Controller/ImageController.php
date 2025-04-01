@@ -83,4 +83,20 @@ class ImageController extends BaseController
         $result = $this->imageService->getReferenceImages($param);
         return $this->response('success', $result);
     }
+
+    #[Route('/api/insert/reference', methods: 'POST')]
+    public function insertReferenceImage(): Response
+    {
+        $param = $this->getContentParams();
+        $this->imageService->insertReferenceImage($param);
+        return $this->response('success', []);
+    }
+
+    #[Route('/api/delete/reference', methods: 'PUT')]
+    public function deleteReferenceImage(): Response
+    {
+        $param = $this->getContentParams();
+        $this->imageService->deleteReferenceImage($param);
+        return $this->response('success', []);
+    }
 }
