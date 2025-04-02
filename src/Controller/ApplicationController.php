@@ -97,7 +97,7 @@ class ApplicationController extends BaseController
         return $this->response('success', [
             'mall_id' => Context::getMallId(),
             'user_id' => Context::getUserId(),
-            'token' => $this->jwtService->encodeJwt(['mall_id' => 'testid2023', 'user_id' => ''])
+            'token' => $this->jwtService->encodeJwt(['mall_id' => 'testid2023', 'user_id' => 'testid2023'])
         ]);
     }
 

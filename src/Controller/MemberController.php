@@ -45,4 +45,11 @@ class MemberController extends BaseController
 
         return $this->response('success', []);
     }
+
+    #[Route('/api/member/info', methods: 'GET')]
+    public function getMemberInfo(): Response
+    {
+        $mallInfo = $this->memberService->getMemberInfo();
+        return $this->response('success', $mallInfo);
+    }
 }

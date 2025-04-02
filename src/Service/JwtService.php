@@ -34,7 +34,7 @@ class JwtService
             "iss" => 'Cameleon ' . Env::get('APP_ENV'), // 발급자(issuer)
             "aud" => "mall", // 대상자(audience)
             "sub" => "token", // 주제(subject)
-            "jti" => $mallInfo['mall_id'], // 고유 식별자
+            "jti" => $mallInfo['user_id'], // 고유 식별자
             "iat" => $now, // 발급된 시간(issued at)
             "nbf" => $now - 60, // 유효 시작 시간(not before)
             "exp" => $now + (60 * 60 * self::TOKEN_HOURS), // 만료 시간(expiration time)

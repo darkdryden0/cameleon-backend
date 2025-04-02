@@ -36,9 +36,8 @@ class ImageService
     public function getImageList(): array
     {
         // 해당몰에 관련된 모든 이미지 조회해온다
-        $mallId = Context::getMallId();
         $where = [
-            'mall_id' => $mallId,
+            'user_id' => Context::getUserId(),
             'is_deleted' => 'F'
         ];
         // 아이디 역순으로 노출
@@ -58,7 +57,7 @@ class ImageService
         $type = ArrayUtil::getVal('type', $param);
         if ($url && $type) {
             $this->createdImagesRepository->insert([
-                'mall_id' => Context::getMallId(),
+                'user_id' => Context::getUserId(),
                 'url' => $url,
                 'operate_type' => $type,
                 'insert_date' => date('Y-m-d H:i:s')
@@ -71,7 +70,7 @@ class ImageService
         $ids = ArrayUtil::getVal('id', $param);
         if (ArrayUtil::isValidArray($ids)) {
             // 생성한 이미지를 삭제한다
-            $this->createdImagesRepository->update(['is_deleted' => 'T', 'deleted_date' => date('Y-m-d H:i:s')],['mall_id' => Context::getMallId(), 'id' => $ids]);
+            $this->createdImagesRepository->update(['is_deleted' => 'T', 'deleted_date' => date('Y-m-d H:i:s')],['user_id' => Context::getUserId(), 'id' => $ids]);
         }
     }
 
@@ -80,7 +79,7 @@ class ImageService
         $url = ArrayUtil::getVal('img_url', $param);
         if ($url) {
             $this->uploadImagesRepository->insert([
-                'mall_id' => Context::getMallId(),
+                'user_id' => Context::getUserId(),
                 'url' => $url,
                 'insert_date' => date('Y-m-d H:i:s')
             ]);
@@ -93,7 +92,7 @@ class ImageService
         $ids = ArrayUtil::getVal('id', $param);
         if (ArrayUtil::isValidArray($ids)) {
             // 업로드 이미지를 삭제한다
-            $this->uploadImagesRepository->update(['is_deleted' => 'T', 'deleted_date' => date('Y-m-d H:i:s')],['mall_id' => Context::getMallId(), 'id' => $ids]);
+            $this->uploadImagesRepository->update(['is_deleted' => 'T', 'deleted_date' => date('Y-m-d H:i:s')],['user_id' => Context::getUserId(), 'id' => $ids]);
         }
     }
 
@@ -101,7 +100,7 @@ class ImageService
     {
         // 생성한 이미지를 보관함으로 이동한다
         $imageList = ArrayUtil::getVal('image_list', $param);
-        $this->getImgInsertData($imageList, Context::getMallId());
+        $this->getImgInsertData($imageList, Context::getUserId());
     }
 
     public function deleteStorageImages($param): void
@@ -110,7 +109,7 @@ class ImageService
         $ids = ArrayUtil::getVal('id', $param);
         if (ArrayUtil::isValidArray($ids)) {
             // 보관함 이미지를 삭제한다
-            $this->storageImagesRepository->update(['is_deleted' => 'T', 'deleted_date' => date('Y-m-d H:i:s')],['mall_id' => Context::getMallId(), 'id' => $ids]);
+            $this->storageImagesRepository->update(['is_deleted' => 'T', 'deleted_date' => date('Y-m-d H:i:s')],['user_id' => Context::getUserId(), 'id' => $ids]);
         }
     }
 
@@ -126,7 +125,7 @@ class ImageService
             $url = ArrayUtil::getVal('url', $imageInfo);
             if (!$url) continue;
             $insertData[] = [
-                'mall_id' => $mallId,
+                'user_id' => $mallId,
                 'url' => $url,
                 'insert_date' => date('Y-m-d H:i:s'),
             ];
@@ -140,7 +139,7 @@ class ImageService
     public function getReferenceImages($param): array
     {
         $where = [
-            'mall_id' => Context::getMallId(),
+            'user_id' => Context::getUserId(),
             'is_deleted' => 'F'
         ];
         return $this->referenceImagesRepository->findBy($where);
@@ -151,7 +150,7 @@ class ImageService
         $url = ArrayUtil::getVal('url', $param);
         if ($url) {
             $this->referenceImagesRepository->insert([
-                'mall_id' => Context::getMallId(),
+                'user_id' => Context::getUserId(),
                 'url' => $url,
                 'content' => ArrayUtil::getVal('content', $param),
                 'insert_date' => date('Y-m-d H:i:s'),
@@ -166,7 +165,7 @@ class ImageService
         $id = ArrayUtil::getVal('id', $param);
         if ($id) {
             // 업로드 이미지를 삭제한다
-            $this->referenceImagesRepository->update(['is_deleted' => 'T', 'deleted_date' => date('Y-m-d H:i:s')],['mall_id' => Context::getMallId(), 'id' => $id]);
+            $this->referenceImagesRepository->update(['is_deleted' => 'T', 'deleted_date' => date('Y-m-d H:i:s')],['user_id' => Context::getUserId(), 'id' => $id]);
         }
     }
 }

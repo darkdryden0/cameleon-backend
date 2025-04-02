@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Medoo\Repository\MemberLoginRepository;
+use App\Medoo\Repository\MemberInfoRepository;
 use App\Medoo\Repository\CreditHistoryRepository;
 use App\Middleware\Context;
 use App\Service\Cafe24Api\AppstoreOrdersCreate;
@@ -13,28 +13,27 @@ use Psr\Log\LoggerInterface;
 class CreditService
 {
     protected LoggerInterface $appLogger;
-    private MemberLoginRepository $mallInfoRepository;
+    private MemberInfoRepository $memberInfoRepository;
     private CreditHistoryRepository $creditHistoryRepository;
     private AppstoreOrdersCreate $appstoreOrdersCreate;
 
     public function __construct(
         LoggerInterface         $appLogger,
-        MemberLoginRepository   $mallInfoRepository,
+        MemberInfoRepository    $memberInfoRepository,
         CreditHistoryRepository $creditHistoryRepository,
         AppstoreOrdersCreate    $appstoreOrdersCreate,
     )
     {
         $this->appLogger = $appLogger;
-        $this->mallInfoRepository = $mallInfoRepository;
+        $this->memberInfoRepository = $memberInfoRepository;
         $this->creditHistoryRepository = $creditHistoryRepository;
         $this->appstoreOrdersCreate = $appstoreOrdersCreate;
     }
 
     public function creditHistoryList($param): array
     {
-        $mallId = Context::getMallId();
         $where = [
-            'mall_id' => $mallId,
+            'user_id' => Context::getUserId(),
         ];
         // 배열
         $orderField = ArrayUtil::getVal('order', $param);
@@ -67,13 +66,13 @@ class CreditService
 
     public function increaseCreditData($param, $mallInfo): string
     {
-        $mallId = Context::getMallId();
+        $userId = Context::getUserId();
         $oldCredit = ArrayUtil::getVal('credit', $mallInfo,0);
         $operateCredit = ArrayUtil::getVal('credit', $param,0);
         $newCredit  = $oldCredit + $operateCredit;
         // 히스토리 테이블에 넣을 데이터
         $insertHistory = [
-            'mall_id' => $mallId,
+            'user_id' => $userId,
             'before_credit' => $oldCredit,
             'after_credit' => $newCredit,
             'operate_credit' => $operateCredit,
@@ -86,14 +85,14 @@ class CreditService
         $creditResult = $this->creditHistoryRepository->insert($insertHistory);
         // 처리결과 -1이면 실패 리턴
         if ($creditResult === -1) return 'credit_history 테이블 처리 실패';
-        $mallResult = $this->mallInfoRepository->update(['credit' => $newCredit], ['mall_id' => $mallId]);
-        if ($mallResult < 1) return 'mall_info 테이블 처리 실패';
+        $mallResult = $this->memberInfoRepository->update(['credit' => $newCredit], ['user_id' => $userId]);
+        if ($mallResult < 1) return 'member_info 테이블 처리 실패';
         return '';
     }
 
     public function decreaseCreditData($param, $mallInfo): bool
     {
-        $mallId = Context::getMallId();
+        $userId = Context::getUserId();
         $oldCredit = ArrayUtil::getVal('credit', $mallInfo,0);
         $operateCredit = ArrayUtil::getVal('credit', $param,0);
         $newCredit = $oldCredit - $operateCredit;
@@ -102,7 +101,7 @@ class CreditService
         }
         // 히스토리 테이블에 넣을 데이터
         $insertHistory = [
-            'mall_id' => $mallId,
+            'user_id' => $userId,
             'before_credit' => $oldCredit,
             'after_credit' => $newCredit,
             'operate_credit' => $operateCredit,
@@ -115,8 +114,8 @@ class CreditService
         $creditResult = $this->creditHistoryRepository->insert($insertHistory);
         // 처리결과 -1이면 실패 리턴
         if ($creditResult === -1) return 'credit_history 테이블 처리 실패';
-        $mallResult = $this->mallInfoRepository->update(['credit' => $newCredit], ['mall_id' => $mallId]);
-        if ($mallResult < 1) return 'mall_info 테이블 처리 실패';
+        $mallResult = $this->memberInfoRepository->update(['credit' => $newCredit], ['user_id' => $userId]);
+        if ($mallResult < 1) return 'member_info 테이블 처리 실패';
         return '';
     }
 }

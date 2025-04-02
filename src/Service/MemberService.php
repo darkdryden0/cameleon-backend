@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Medoo\Repository\MemberLoginRepository;
+use App\Medoo\Repository\MemberInfoRepository;
 use App\Middleware\Context;
 use App\Utils\ArrayUtil;
 use Psr\Log\LoggerInterface;
@@ -10,11 +10,11 @@ use Psr\Log\LoggerInterface;
 class MemberService
 {
     protected LoggerInterface $appLogger;
-    private MemberLoginRepository $memberLoginRepository;
+    private MemberInfoRepository $memberLoginRepository;
 
     public function __construct(
         LoggerInterface       $appLogger,
-        MemberLoginRepository $memberLoginRepository
+        MemberInfoRepository $memberLoginRepository
     )
     {
         $this->appLogger = $appLogger;
@@ -56,5 +56,13 @@ class MemberService
         // 검색결과 1개이하면 실패 리턴
         if ($dbResult < 1) return false;
         return true;
+    }
+
+    public function getMemberInfo(): ?array
+    {
+        $userInfo = $this->memberLoginRepository->findOneBy(['user_id' => Context::getUserId()]);
+
+        if (ArrayUtil::isValidArray($userInfo)) return $userInfo;
+        return [];
     }
 }

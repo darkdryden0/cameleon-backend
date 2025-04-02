@@ -114,7 +114,6 @@ class MallService
             'refresh_expires_date' => ArrayUtil::getVal('refresh_token_expires_at', $tokenInfo),
             'create_date' => date('Y-m-d H:i:s'),
             'issued_date' => ArrayUtil::getVal('issued_at', $tokenInfo),
-            'credit' => 0,
             'is_used' => 'T'
         ];
         $dbResult = $this->mallInfoRepository->insert($insertData);
