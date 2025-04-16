@@ -26,8 +26,8 @@ class MemberController extends BaseController
     {
         $param = $this->getContentParams();
         // 이메일 사용가능한지 확인
-        $emailFlag = $this->memberService->checkEmail($param);
-        if (!$emailFlag) return $this->response('이미 가입한 이메일 입니다.', [], Response::HTTP_BAD_REQUEST);
+        $userFlag = $this->memberService->checkUserId($param);
+        if (!$userFlag) return $this->response('이미 가입한 아이디 입니다.', [], Response::HTTP_BAD_REQUEST);
 
         // 회원가입 성공했는지 확인
         $result = $this->memberService->registerMember($param);
@@ -41,7 +41,7 @@ class MemberController extends BaseController
     {
         $param = $this->getContentParams();
         $result = $this->memberService->checkLogin($param);
-        if (!$result) return $this->response('회원 등록 실패.', [], Response::HTTP_BAD_REQUEST);
+        if (!$result) return $this->response('아이디 또는 비밀번호를 확인해주세요.', [], Response::HTTP_BAD_REQUEST);
 
         return $this->response('success', []);
     }
@@ -51,5 +51,25 @@ class MemberController extends BaseController
     {
         $mallInfo = $this->memberService->getMemberInfo();
         return $this->response('success', $mallInfo);
+    }
+
+    #[Route('/api/modify/member', methods: 'PUT')]
+    public function modifyMember(): Response
+    {
+        $param = $this->getContentParams();
+        $result = $this->memberService->modifyMember($param);
+        if ($result) return $this->response($result, [], Response::HTTP_BAD_REQUEST);
+
+        return $this->response('success', []);
+    }
+
+    #[Route('/api/change/password', methods: 'PUT')]
+    public function changePassword(): Response
+    {
+        $param = $this->getContentParams();
+        $result = $this->memberService->changePassword($param);
+        if ($result) return $this->response($result, [], Response::HTTP_BAD_REQUEST);
+
+        return $this->response('success', []);
     }
 }
