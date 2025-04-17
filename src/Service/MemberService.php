@@ -32,12 +32,24 @@ class MemberService
         return true;
     }
 
+    public function validPassword($param): string
+    {
+        $password = ArrayUtil::getVal('password', $param);
+        if (!$password) return '비밀번호를 입력해 주세요.';
+
+        // 비번 정규식 체크
+        if (preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/', $password) === false) {
+            return '비밀번호는 8자 이상의 영어, 숫자, 특수문자 조합으로 설정해 주세요.';
+        }
+        return '';
+    }
+
     public function registerMember($param): bool
     {
         $data = [
             'user_id' => ArrayUtil::getVal('user_id', $param),
             'email' => ArrayUtil::getVal('email', $param),
-            'password' => ArrayUtil::getVal('password', $param),
+            'password' => password_hash(ArrayUtil::getVal('password', $param), PASSWORD_DEFAULT),
             'phone' => ArrayUtil::getVal('phone', $param),
             'company' => ArrayUtil::getVal('company', $param),
             'business_num' => ArrayUtil::getVal('business_num', $param),
@@ -54,11 +66,15 @@ class MemberService
     {
         $where = [
             'user_id' => ArrayUtil::getVal('user_id', $param),
-            'password' => ArrayUtil::getVal('password', $param),
         ];
-        $dbResult = $this->memberInfoRepository->count($where);
-        // 검색결과 1개이하면 실패 리턴
-        if ($dbResult < 1) return false;
+        $dbResult = $this->memberInfoRepository->findOneBy($where);
+        // 아이디로 찾은 결과 없으면 실패
+        if (ArrayUtil::isValidArray($dbResult) === false) return false;
+
+        // 비번 체크시 맞지 않으면 실패.
+        if (password_verify(ArrayUtil::getVal('password', $param), ArrayUtil::getVal('password', $dbResult)) === false) {
+            return false;
+        }
         return true;
     }
 
@@ -92,11 +108,11 @@ class MemberService
             $checkResult = $this->checkPassword($password, $checkPwd);
             if ($checkResult) return $checkResult;
             // 에러메세지 없으면 비번수정해야 한다.
-            $updateData['password'] = $password;
+            $updateData['password'] = password_hash($password, PASSWORD_DEFAULT);
         }
 
         $memberResult = $this->memberInfoRepository->update($updateData, ['user_id' => Context::getUserId()]);
-        if ($memberResult < 1) return '계정 정보 수정 실패';
+        if ($memberResult < 1) return '수정한 정보가 없습니다.';
         return '';
     }
 

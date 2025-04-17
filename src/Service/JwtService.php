@@ -21,10 +21,10 @@ class JwtService
     }
 
     /**
-     * @param array $mallInfo
+     * @param array $userInfo
      * @return string
      */
-    public function encodeJwt(array $mallInfo): string
+    public function encodeJwt(array $userInfo): string
     {
         // 현재 timestamp 얻어옴
         $time = new DateTimeImmutable();
@@ -32,15 +32,15 @@ class JwtService
 
         return JWT::encode([
             "iss" => 'Cameleon ' . Env::get('APP_ENV'), // 발급자(issuer)
-            "aud" => "mall", // 대상자(audience)
+            "aud" => "user", // 대상자(audience)
             "sub" => "token", // 주제(subject)
-            "jti" => $mallInfo['user_id'], // 고유 식별자
+            "jti" => $userInfo['user_id'], // 고유 식별자
             "iat" => $now, // 발급된 시간(issued at)
             "nbf" => $now - 60, // 유효 시작 시간(not before)
             "exp" => $now + (60 * 60 * self::TOKEN_HOURS), // 만료 시간(expiration time)
             "info" => [
-                'mall_id' => $mallInfo['mall_id'],
-                'user_id' => $mallInfo['user_id'],
+                'mall_id' => $userInfo['mall_id'],
+                'user_id' => $userInfo['user_id'],
             ]
         ], $this->key, 'HS512', 'keyId');
     }
@@ -52,23 +52,4 @@ class JwtService
     {
         return (array)JWT::decode($token, new Key($this->key, 'HS512'));
     }
-
-    public function encodeAdminJwt(string $adminId): string
-    {
-        // 현재 timestamp 얻어옴
-        $time = new DateTimeImmutable();
-        $now = $time->getTimestamp();
-
-        return JWT::encode([
-            "iss" => 'Cameleon AI ' . Env::get('APP_ENV'), // 발급자(issuer)
-            "aud" => "admin", // 대상자(audience)
-            "sub" => "admin_token", // 주제(subject)
-            "jti" => $adminId, // 고유 식별자
-            "iat" => $now, // 발급된 시간(issued at)
-            "nbf" => $now - 60, // 유효 시작 시간(not before)
-            "exp" => $now + (60 * 60 * self::TOKEN_HOURS), // 만료 시간(expiration time)
-            "info" => []
-        ], $this->key, 'HS512', 'keyId');
-    }
-
 }
