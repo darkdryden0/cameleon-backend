@@ -91,9 +91,9 @@ class ApplicationService
 
     public function checkValidToken($tokenInfo): bool
     {
-        $mallId = ArrayUtil::getVal('jti', $tokenInfo);
-        // 몰아이디가 없다면 유효한 토큰이 아님
-        if (!$mallId) return false;
+        $userId = ArrayUtil::getVal('jti', $tokenInfo);
+        // 아이디가 없다면 유효한 토큰이 아님
+        if (!$userId) return false;
 
         return true;
     }

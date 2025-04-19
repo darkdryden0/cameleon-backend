@@ -34,6 +34,9 @@ class Middleware
         // 토큰인증
         '/api/application/valid_token',
         '/api/application/context',
+        // 회원 관련
+        '/api/check/login',
+        '/api/register/member'
     ];
 
     private array $intraPath = [
