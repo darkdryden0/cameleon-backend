@@ -2,8 +2,9 @@
 
 namespace App\Service;
 
-use App\Medoo\Repository\MemberInfoRepository;
 use App\Medoo\Repository\CreditHistoryRepository;
+use App\Medoo\Repository\MemberInfoRepository;
+use App\Medoo\Repository\PaymentHistoryRepository;
 use App\Middleware\Context;
 use App\Service\Cafe24Api\AppstoreOrdersCreate;
 use App\Utils\ArrayUtil;
@@ -15,18 +16,21 @@ class CreditService
     protected LoggerInterface $appLogger;
     private MemberInfoRepository $memberInfoRepository;
     private CreditHistoryRepository $creditHistoryRepository;
+    private PaymentHistoryRepository $paymentHistoryRepository;
     private AppstoreOrdersCreate $appstoreOrdersCreate;
 
     public function __construct(
-        LoggerInterface         $appLogger,
-        MemberInfoRepository    $memberInfoRepository,
-        CreditHistoryRepository $creditHistoryRepository,
-        AppstoreOrdersCreate    $appstoreOrdersCreate,
+        LoggerInterface          $appLogger,
+        MemberInfoRepository     $memberInfoRepository,
+        CreditHistoryRepository  $creditHistoryRepository,
+        PaymentHistoryRepository $paymentHistoryRepository,
+        AppstoreOrdersCreate     $appstoreOrdersCreate,
     )
     {
         $this->appLogger = $appLogger;
         $this->memberInfoRepository = $memberInfoRepository;
         $this->creditHistoryRepository = $creditHistoryRepository;
+        $this->paymentHistoryRepository = $paymentHistoryRepository;
         $this->appstoreOrdersCreate = $appstoreOrdersCreate;
     }
 
@@ -55,13 +59,39 @@ class CreditService
 
     public function  purchaseCredit($param, $accessToken): string
     {
+        $type = ArrayUtil::getVal('type', $param);
+        if ($type === 'Basic') {
+            $price = 100;
+        } elseif ($type === 'Plus') {
+            $price = 200;
+        } elseif ($type === 'Pro') {
+            $price = 300;
+        } else {
+            // 만약 타입이 없거나 이상한 값이면 결제 진행안한다.
+            return '';
+        }
         $apiParam = [
-            'order_name' => 'Appstore Order Name',
-            'order_amount' => ArrayUtil::getVal('amount', $param),
-            'return_url' => Env::get('APP_BACK_HOST') . '/api/credit/increase',
+            'request' => [
+                'order_name' => 'Carmeleon ' . $type,
+                'order_amount' => $price,
+                'return_url' => Env::get('APP_BACK_HOST') . '/api/credit/increase',
+            ]
         ];
         $apiResult = $this->appstoreOrdersCreate->send($apiParam, $accessToken);
-        return ArrayUtil::getVal('confirmation_url', $apiResult);
+        $confirmationUrl = ArrayUtil::getVal('confirmation_url', $apiResult);
+        if ($confirmationUrl) {
+            $insertData = [
+                'user_id' => Context::getUserId(),
+                'order_id' => ArrayUtil::getVal('order_id', $apiResult),
+                'order_name' => $type,
+                'order_amount' => ArrayUtil::getVal('order_amount', $apiResult),
+                'payment_date' => date('Y-m-d H:i:s'),
+                'payment_result' => 'await',
+            ];
+            $this->paymentHistoryRepository->insert($insertData);
+            return $confirmationUrl;
+        }
+        return '';
     }
 
     public function increaseCreditData($param, $mallInfo): string

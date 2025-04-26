@@ -47,16 +47,16 @@ class CreditController extends BaseController
         }
         $param = $this->getContentParams();
         $confirmUrl = $this->creditService->purchaseCredit($param, $accessToken);
-        if (strlen($confirmUrl) == 0) {
+        if (!$confirmUrl) {
             return $this->response('결제 Url이 없습니다.', [], Response::HTTP_BAD_REQUEST);
         }
-        return new RedirectResponse($confirmUrl);
+        return $this->response('success', $confirmUrl);
     }
 
-    #[Route('/api/credit/increase', methods: 'PUT')]
+    #[Route('/api/credit/increase', methods: 'GET')]
     public function increaseCreditData(MessageBusInterface $messageBus): Response
     {
-        $param = $this->getContentParams();
+        $param = $this->getQueryParams();
         $creditUpdate = new CreditUpdate('increase', Context::getMallId(), $param);
         $messageBus->dispatch($creditUpdate);
         return $this->response('success', []);
