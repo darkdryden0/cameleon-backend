@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Medoo\Repository\MallInfoRepository;
 use App\Medoo\Repository\MemberInfoRepository;
 use App\Middleware\Context;
 use App\Utils\ArrayUtil;
@@ -11,14 +12,17 @@ class MemberService
 {
     protected LoggerInterface $appLogger;
     private MemberInfoRepository $memberInfoRepository;
+    private MallInfoRepository $mallInfoRepository;
 
     public function __construct(
         LoggerInterface      $appLogger,
-        MemberInfoRepository $memberInfoRepository
+        MemberInfoRepository $memberInfoRepository,
+        MallInfoRepository   $mallInfoRepository,
     )
     {
         $this->appLogger = $appLogger;
         $this->memberInfoRepository = $memberInfoRepository;
+        $this->mallInfoRepository = $mallInfoRepository;
     }
 
     public function checkUserId($param): bool
@@ -64,8 +68,9 @@ class MemberService
 
     public function checkLogin($param): bool
     {
+        $userId = ArrayUtil::getVal('user_id', $param);
         $where = [
-            'user_id' => ArrayUtil::getVal('user_id', $param),
+            'user_id' => $userId,
         ];
         $dbResult = $this->memberInfoRepository->findOneBy($where);
         // 아이디로 찾은 결과 없으면 실패
@@ -75,6 +80,9 @@ class MemberService
         if (password_verify(ArrayUtil::getVal('password', $param), ArrayUtil::getVal('password', $dbResult)) === false) {
             return false;
         }
+        // shop_key 가 있고 플랫폼|아이디 구조로 전송했다면 처리한다
+        $shopKey = ArrayUtil::getVal('shop_key', $param);
+        $this->updateMallUserId($shopKey, $userId);
         return true;
     }
 
@@ -143,5 +151,18 @@ class MemberService
             return '비밀번호가 정확하지 않습니다.';
         }
         return '';
+    }
+
+    private function updateMallUserId($shopKey, $userId): void
+    {
+        if ($shopKey && str_contains($shopKey, "|")) {
+            $parts = explode("|", $shopKey);
+            $platform = $parts[0] ?? '';
+            $mallId = $parts[1] ?? '';
+
+            if ($platform && $mallId) {
+                $this->mallInfoRepository->update(['user_id' => $userId], ['mall_id' => $mallId, 'platform' => $platform]);
+            }
+        }
     }
 }

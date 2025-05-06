@@ -87,13 +87,17 @@ class MallService
 
     public function setMallInfo(array $tokenInfo): bool
     {
-        $flag = $this->mallInfoRepository->count(['mall_id' => Context::getMallId()]);
-        if ($flag === 0) {
-            $result = $this->insertMallInfo($tokenInfo);
+        $mallInfo = $this->mallInfoRepository->findOneBy(['mall_id' => Context::getMallId()]);
+        $userId = ArrayUtil::getVal('user_id', $mallInfo);
+        if ($userId) {
+            $this->updateMallInfo($tokenInfo);
         } else{
-            $result = $this->updateMallInfo($tokenInfo);
+            $tokenInfo['platform'] = 'cafe24';
+            $tokenInfo['user_id'] = '';
+            $this->insertMallInfo($tokenInfo);
+            $userId = '';
         }
-        return $result;
+        return $userId;
     }
 
     public function getMallInfo(): ?array
