@@ -85,7 +85,7 @@ class MallService
         return '';
     }
 
-    public function setMallInfo(array $tokenInfo): bool
+    public function setMallInfo(array $tokenInfo): string
     {
         $mallInfo = $this->mallInfoRepository->findOneBy(['mall_id' => Context::getMallId()]);
         $userId = ArrayUtil::getVal('user_id', $mallInfo);
@@ -118,7 +118,9 @@ class MallService
             'refresh_expires_date' => ArrayUtil::getVal('refresh_token_expires_at', $tokenInfo),
             'create_date' => date('Y-m-d H:i:s'),
             'issued_date' => ArrayUtil::getVal('issued_at', $tokenInfo),
-            'is_used' => 'T'
+            'is_used' => 'T',
+            'platform' => ArrayUtil::getVal('platform', $tokenInfo),
+            'user_id' => ArrayUtil::getVal('user_id', $tokenInfo),
         ];
         $dbResult = $this->mallInfoRepository->insert($insertData);
 

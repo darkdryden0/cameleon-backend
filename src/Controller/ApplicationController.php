@@ -77,22 +77,20 @@ class ApplicationController extends BaseController
         $mallInfo = [];
         $mallId = ArrayUtil::getVal('mall_id', $state);
         $mallInfo['mall_id'] = $mallId;
-
         // 컨텍스트 설정
-        Context::setMallId($mallInfo['mall_id']);
-        Context::setUserId($mallInfo['user_id']);
+        Context::setMallId($mallId);
 
         $tokenInfo = $this->applicationService->getTokenByCode(ArrayUtil::getVal('code', $param));
         $userId = $this->mallService->setMallInfo($tokenInfo);
         $mallInfo['user_id'] = $userId;
-
+        Context::setUserId($userId);
 
         // 이미 가입하면 메인페이지에 들어가고 아니면 로그인페이지
         if ($userId) {
             $jwtToken = $this->jwtService->encodeJwt($mallInfo);
-            $frontUrl = Env::get('APP_FRONT') . '/auth?jwt=' . $jwtToken;
+            $frontUrl = Env::get('APP_FRONT') . '/fusion/auth?jwt=' . $jwtToken;
         } else {
-            $frontUrl = Env::get('APP_FRONT') . '/member/login?shop_key=cafe24|' . $mallId;
+            $frontUrl = Env::get('APP_FRONT') . '/fusion/member/login?shop_key=cafe24|' . $mallId;
         }
         return new RedirectResponse($frontUrl);
     }

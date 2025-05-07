@@ -165,4 +165,21 @@ class MemberService
             }
         }
     }
+
+    public function getLoginMallId($param):string
+    {
+        $shopKey = ArrayUtil::getVal('shop_key', $param);
+        if ($shopKey && str_contains($shopKey, "|")) {
+            $parts = explode("|", $shopKey);
+            return $parts[1] ?? '';
+        }
+        // 파람에 없으면 디비에서 찾는다
+        $mallId = '';
+        $userId = ArrayUtil::getVal('user_id',$param);
+        if ($userId) {
+            $mallInfo = $this->mallInfoRepository->findOneBy(['user_id' => $userId]);
+            $mallId = ArrayUtil::getVal('mall_id', $mallInfo);
+        }
+        return $mallId;
+    }
 }

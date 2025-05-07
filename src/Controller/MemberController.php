@@ -52,7 +52,9 @@ class MemberController extends BaseController
         $param = $this->getContentParams();
         $result = $this->memberService->checkLogin($param);
         if (!$result) return $this->response('아이디 또는 비밀번호를 확인해주세요.', [], Response::HTTP_BAD_REQUEST);
-        $token = $this->jwtService->encodeJwt(['mall_id' => 'testid2023', 'user_id' => ArrayUtil::getVal('user_id', $param)]);
+        // 등록했으면 몰아이디를 조회해 온다
+        $mallId = $this->memberService->getLoginMallId($param);
+        $token = $this->jwtService->encodeJwt(['mall_id' => $mallId, 'user_id' => ArrayUtil::getVal('user_id', $param)]);
 
         return $this->response('success', ['token' => $token]);
     }
