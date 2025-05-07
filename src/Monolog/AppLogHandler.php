@@ -45,7 +45,7 @@ class AppLogHandler extends AbstractProcessingHandler
         Stdout::log($logData);
 
         // 알림
-        $this->sendAlarm($level, $message, $logData);
+        //$this->sendAlarm($level, $message, $logData);
 
         // 개발용 로그
         $this->dbLog($level, $message, $logData);

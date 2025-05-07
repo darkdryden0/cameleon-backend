@@ -34,7 +34,7 @@ class HealthController extends BaseController
             $result['redis_error'] = $redisResult;
             $result['mq_error'] = $mqResult;
 
-            $result['alarm_result'] = Iams::sendAlarm('health check ' . print_r($result, true));
+            //$result['alarm_result'] = Iams::sendAlarm('health check ' . print_r($result, true));
 
             Context::getLogger()->info('health check', $result);
         }
